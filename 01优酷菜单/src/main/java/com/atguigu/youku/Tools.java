@@ -40,10 +40,10 @@ public class Tools {
      */
     public static void hideView(ViewGroup view, int startOffset) {
         //视图动画--补间动画
-//        hideViewByRotateAnimation(view, startOffset);
+        hideViewByRotateAnimation(view, startOffset);
 
         //视图动画--属性动画
-        hideViewByObjectAnimation(view, startOffset);
+//        hideViewByObjectAnimation(view, startOffset);
     }
 
     /**
@@ -54,11 +54,13 @@ public class Tools {
      */
     public static void showView(ViewGroup view, int startOffset) {
         //视图动画--补间动画
-//        showViewByRotateAnimation(view, startOffset);
+        showViewByRotateAnimation(view, startOffset);
 
         //视图动画--属性动画
-        showViewByObjectAnimation(view, startOffset);
+//        showViewByObjectAnimation(view, startOffset);
     }
+
+    //===================================  使用ObjectAnimation  ===========================================================//
 
     /**
      * 使用ObjectAnimation来隐藏ViewGroup
@@ -118,6 +120,9 @@ public class Tools {
     }
 
 
+    //===================================  使用RotateAnimation  ===========================================================//
+
+
     /**
      * 使用RotateAnimation来隐藏ViewGroup
      *
@@ -125,9 +130,8 @@ public class Tools {
      * @param startOffset 动画延迟多久开始播放
      */
     private static void hideViewByRotateAnimation(ViewGroup viewGroup, int startOffset) {
-        RotateAnimation ra = new RotateAnimation(0, 180, viewGroup.getWidth() / 2, viewGroup.getHeight());
         // 开启动画并设置ViewGroup及其子View 不可以点击
-        startRotateAnimation(viewGroup, startOffset, ra, false);
+        startRotateAnimation(viewGroup, startOffset, 0, 180, false);
     }
 
     /**
@@ -137,35 +141,40 @@ public class Tools {
      * @param startOffset 动画延迟多久开始播放
      */
     private static void showViewByRotateAnimation(ViewGroup viewGroup, int startOffset) {
-        RotateAnimation ra = new RotateAnimation(180, 360, viewGroup.getWidth() / 2, viewGroup.getHeight());
         // 开启动画并设置ViewGroup及其子View 可以点击
-        startRotateAnimation(viewGroup, startOffset, ra, true);
+        startRotateAnimation(viewGroup, startOffset, 180, 360, true);
     }
 
 
     /**
      * 开启RotateAnimation动画
      *
-     * @param viewGroup       要显示动画的ViewGroup
-     * @param startOffset     动画延迟多久开始播放
-     * @param rotateAnimation RotateAnimation动画
-     * @param enable          是否可以点击，true为可以，false为不可以
+     * @param viewGroup   要显示动画的ViewGroup
+     * @param startOffset 动画延迟多久开始播放
+     * @param valueFrom   起始角度
+     * @param valueTo     最终角度
+     * @param enable      是否可以点击，true为可以，false为不可以
      */
-    private static void startRotateAnimation(ViewGroup viewGroup, int startOffset, RotateAnimation rotateAnimation, boolean enable) {
-        startRotateAnimation(viewGroup, startOffset, 500, true, rotateAnimation, enable);
+    private static void startRotateAnimation(ViewGroup viewGroup, int startOffset, float valueFrom, float valueTo, boolean enable) {
+        startRotateAnimation(viewGroup, startOffset, 500, valueFrom, valueTo, viewGroup.getWidth() / 2, viewGroup.getHeight(), true, enable);
     }
+
 
     /**
      * 开启RotateAnimation动画
      *
-     * @param viewGroup       要显示动画的ViewGroup
-     * @param startOffset     动画延迟多久开始播放
-     * @param durationMillis  动画播放持续的时间
-     * @param fillAfter       动画停留在播放完成的状态
-     * @param rotateAnimation RotateAnimation动画
-     * @param enable          是否可以点击，true为可以，false为不可以
+     * @param viewGroup      要显示动画的ViewGroup
+     * @param startOffset    动画延迟多久开始播放
+     * @param durationMillis 动画播放持续的时间
+     * @param valueFrom      起始角度
+     * @param valueTo        最终角度
+     * @param pivotX         旋转的轴点和缩放的基准点坐标X
+     * @param pivotY         旋转的轴点和缩放的基准点坐标Y
+     * @param fillAfter      动画是否停留在播放完成的状态
+     * @param enable         ViewGroup及其子View是否可以点击
      */
-    private static void startRotateAnimation(ViewGroup viewGroup, int startOffset, long durationMillis, boolean fillAfter, RotateAnimation rotateAnimation, boolean enable) {
+    private static void startRotateAnimation(ViewGroup viewGroup, int startOffset, long durationMillis, float valueFrom, float valueTo, float pivotX, float pivotY, boolean fillAfter, boolean enable) {
+        RotateAnimation rotateAnimation = new RotateAnimation(valueFrom, valueTo, pivotX, pivotY);
         //设置动画播放持续的时间
         rotateAnimation.setDuration(durationMillis);
         //动画停留在播放完成的状态
