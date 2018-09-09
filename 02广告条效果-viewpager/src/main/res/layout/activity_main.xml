@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:padding="3dp"
-            android:text="美国队长3"
+            tools:text="美国队长3"
             android:textColor="#ffffff" />
 
         <LinearLayout
