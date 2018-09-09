@@ -30,21 +30,21 @@ public class MainActivity extends AppCompatActivity implements BaseHandlerCallBa
      * 图片资源ID
      */
     private final int[] imageIds = {
-            R.drawable.a,
-            R.drawable.b,
-            R.drawable.c,
-            R.drawable.d,
-            R.drawable.e};
+            R.drawable.a1,
+            R.drawable.a2,
+            R.drawable.a3,
+            R.drawable.a4,
+            R.drawable.a5};
 
     /**
      * 图片标题集合
      */
     private final String[] imageDescriptions = {
-            "尚硅谷波河争霸赛！",
-            "凝聚你我，放飞梦想！",
-            "抱歉没座位了！",
-            "7月就业名单全部曝光！",
-            "平均起薪11345元"
+            "美女1",
+            "美女2",
+            "美女3",
+            "美女4",
+            "美女5"
     };
 
     /**
@@ -61,6 +61,10 @@ public class MainActivity extends AppCompatActivity implements BaseHandlerCallBa
      */
     private NoLeakHandler mNoLeakHandler;
 
+    /**
+     * 处理Handler消息
+     * @param msg Handler消息
+     */
     @Override
     public void callBack(Message msg) {
         Log.d(TAG, "callBack() msg =" + msg);
@@ -71,11 +75,6 @@ public class MainActivity extends AppCompatActivity implements BaseHandlerCallBa
         mNoLeakHandler.sendEmptyMessageDelayed(0, 4000);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mNoLeakHandler.removeCallbacksAndMessages(null);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements BaseHandlerCallBa
         for (int i = 0; i < imageIds.length; i++) {
             ImageView imageView = new ImageView(this);
             imageView.setBackgroundResource(imageIds[i]);
+            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
             //添加到集合中
             imageViews.add(imageView);
@@ -114,8 +114,9 @@ public class MainActivity extends AppCompatActivity implements BaseHandlerCallBa
         //设置监听ViewPager页面的改变
         viewpager.addOnPageChangeListener(new MyOnPageChangeListener());
 
-        //设置中间位置
-        int item = Integer.MAX_VALUE / 2 - Integer.MAX_VALUE / 2 % imageViews.size();//要保证imageViews的整数倍
+        //默认设置中间位置，这样才能支持左右无限滑动
+        //要保证imageViews的整数倍
+        int item = Integer.MAX_VALUE / 2 - getRealPosition(Integer.MAX_VALUE / 2);
         viewpager.setCurrentItem(item);
 
         tv_title.setText(imageDescriptions[prePosition]);
@@ -123,6 +124,12 @@ public class MainActivity extends AppCompatActivity implements BaseHandlerCallBa
         //发消息
         mNoLeakHandler = new NoLeakHandler(this);
         mNoLeakHandler.sendEmptyMessageDelayed(0, 3000);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mNoLeakHandler.removeCallbacksAndMessages(null);
     }
 
     /**
@@ -201,6 +208,7 @@ public class MainActivity extends AppCompatActivity implements BaseHandlerCallBa
         @Override
         public int getCount() {
 //            return imageViews.size();
+            //改为Integer.MAX_VALUE  支持无限滑动
             return Integer.MAX_VALUE;
         }
 
@@ -218,32 +226,9 @@ public class MainActivity extends AppCompatActivity implements BaseHandlerCallBa
             container.addView(imageView);//添加到ViewPager中
             Log.d(TAG, "instantiateItem==" + position + ",---imageView==" + imageView);
 
-            imageView.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    switch (event.getAction()) {
-                        case MotionEvent.ACTION_DOWN://手指按下
-                            Log.d(TAG, "onTouch==手指按下");
-                            mNoLeakHandler.removeCallbacksAndMessages(null);
-                            break;
-
-                        case MotionEvent.ACTION_MOVE://手指在这个控件上移动
-                            break;
-                        case MotionEvent.ACTION_CANCEL://手指在这个控件上移动
-                            Log.d(TAG, "onTouch==事件取消");
-//                            mNoLeakHandler.removeCallbacksAndMessages(null);
-//                            mNoLeakHandler.sendEmptyMessageDelayed(0,4000);
-                            break;
-                        case MotionEvent.ACTION_UP://手指离开
-                            Log.d(TAG, "onTouch==手指离开");
-                            mNoLeakHandler.removeCallbacksAndMessages(null);
-                            mNoLeakHandler.sendEmptyMessageDelayed(0, 4000);
-                            break;
-                    }
-                    return false;
-                }
-            });
-
+            //设置图片的触摸事件
+            imageView.setOnTouchListener(new MyImageOnTouchListener());
+            //保存位置
             imageView.setTag(position);
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -287,6 +272,38 @@ public class MainActivity extends AppCompatActivity implements BaseHandlerCallBa
         }
     }
 
+    class MyImageOnTouchListener implements View.OnTouchListener {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN://手指按下
+                    Log.d(TAG, "onTouch==手指按下");
+                    mNoLeakHandler.removeCallbacksAndMessages(null);
+                    break;
+                case MotionEvent.ACTION_MOVE://手指在这个控件上移动
+                    break;
+                case MotionEvent.ACTION_CANCEL://手指在这个控件上移动
+                    Log.d(TAG, "onTouch==事件取消");
+                    break;
+                case MotionEvent.ACTION_UP://手指离开
+                    Log.d(TAG, "onTouch==手指离开");
+                    mNoLeakHandler.removeCallbacksAndMessages(null);
+                    mNoLeakHandler.sendEmptyMessageDelayed(0, 4000);
+                    //如果底下的返回值为true,则需要调用performClick()方法，否则OnClick事件无效
+                    //如果底下的返回值为false,则不一定需要调用performClick()方法
+//                    v.performClick();
+                    break;
+            }
+            return false;
+        }
+    }
+
+    /**
+     * 获取真正的position
+     *
+     * @param position 传入的position
+     * @return 真正的position
+     */
     private int getRealPosition(int position) {
         return position % imageViews.size();
     }
