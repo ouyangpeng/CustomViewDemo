@@ -17,18 +17,28 @@ public class MainActivity extends AppCompatActivity {
     private RelativeLayout level3;
 
     /**
+     * 显示
+     */
+    private final boolean SHOW = true;
+    /**
+     * 隐藏
+     */
+    private final boolean HIDE = false;
+
+
+    /**
      * 是否显示第三圆环
      * true:显示
      * false隐藏
      */
-    private boolean isShowLevel3 = true;
+    private boolean isShowLevel3 = SHOW;
 
     /**
      * 是否显示第二圆环
      * true:显示
      * false隐藏
      */
-    private boolean isShowLevel2 = true;
+    private boolean isShowLevel2 = SHOW;
 
 
     /**
@@ -36,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
      * true:显示
      * false隐藏
      */
-    private boolean isShowLevel1 = true;
+    private boolean isShowLevel1 = SHOW;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,25 +85,27 @@ public class MainActivity extends AppCompatActivity {
                     //如果三级菜单和二级菜单是显示，都设置隐藏
                     if (isShowLevel2) {
                         //隐藏二级菜单
-                        hideLevel2(0);
+                        showOrHideLevel(R.id.level2, HIDE, 0);
                         if (isShowLevel3) {
                             //隐藏三级菜单
-                            hideLevel3(200);
+                            showOrHideLevel(R.id.level3, HIDE, 200);
                         }
                     } else {
                         //如果都是隐藏的，二级菜单显示
                         //显示二级菜单
-                        showLevel2(0);
+                        showOrHideLevel(R.id.level2, SHOW, 0);
                     }
                     break;
                 case R.id.icon_menu://菜单
                     if (isShowLevel3) {
                         //隐藏
-                        hideLevel3(0);
+                        showOrHideLevel(R.id.level3, HIDE, 0);
                     } else {
                         //显示
-                        showLevel3(0);
+                        showOrHideLevel(R.id.level3, SHOW, 0);
                     }
+                    break;
+                default:
                     break;
             }
         }
@@ -105,21 +117,21 @@ public class MainActivity extends AppCompatActivity {
         if (keyCode == KeyEvent.KEYCODE_MENU) {
             //如果一级，二级，三级菜单是显示的就全部隐藏
             if (isShowLevel1) {
-                hideLevel1(0);
+                showOrHideLevel(R.id.level1, HIDE, 0);
                 if (isShowLevel2) {
                     //隐藏二级菜单
-                    hideLevel2(200);
+                    showOrHideLevel(R.id.level2, HIDE, 200);
                     if (isShowLevel3) {
                         //隐藏三级菜单
-                        hideLevel3(400);
+                        showOrHideLevel(R.id.level3, HIDE, 400);
                     }
                 }
             } else {
                 //如果一级，二级菜单隐藏，就显示
                 //显示一级菜单
-                showLevel1(0);
+                showOrHideLevel(R.id.level1, SHOW, 0);
                 //显示二级菜单
-                showLevel2(200);
+                showOrHideLevel(R.id.level2, SHOW, 200);
             }
             //返回true表示已经拦截处理了
             return true;
@@ -127,33 +139,35 @@ public class MainActivity extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
-    private void hideLevel1(int startOffset) {
-        isShowLevel2 = false;
-        Tools.hideView(level2, startOffset);
-    }
 
-    private void showLevel1(int startOffset) {
-        isShowLevel1 = true;
-        Tools.showView(level1, startOffset);
-    }
-
-    private void hideLevel2(int startOffset) {
-        isShowLevel2 = false;
-        Tools.hideView(level2, startOffset);
-    }
-
-    private void showLevel2(int startOffset) {
-        isShowLevel2 = true;
-        Tools.showView(level2, startOffset);
-    }
-
-    private void showLevel3(int startOffset) {
-        isShowLevel3 = true;
-        Tools.showView(level3, startOffset);
-    }
-
-    private void hideLevel3(int startOffset) {
-        isShowLevel3 = false;
-        Tools.hideView(level3, startOffset);
+    private void showOrHideLevel(int viewID, boolean isShow, int startOffset) {
+        switch (viewID) {
+            case R.id.level1:
+                isShowLevel1 = isShow;
+                if (isShowLevel1) {
+                    Tools.showView(level1, startOffset);
+                } else {
+                    Tools.hideView(level1, startOffset);
+                }
+                break;
+            case R.id.level2:
+                isShowLevel2 = isShow;
+                if (isShowLevel2) {
+                    Tools.showView(level2, startOffset);
+                } else {
+                    Tools.hideView(level2, startOffset);
+                }
+                break;
+            case R.id.level3:
+                isShowLevel3 = isShow;
+                if (isShowLevel3) {
+                    Tools.showView(level3, startOffset);
+                } else {
+                    Tools.hideView(level3, startOffset);
+                }
+                break;
+            default:
+                break;
+        }
     }
 }
