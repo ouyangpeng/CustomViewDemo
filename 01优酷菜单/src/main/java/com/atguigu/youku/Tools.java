@@ -79,9 +79,8 @@ public class Tools {
      */
     private static void hideViewByRotateAnimation(ViewGroup view, int startOffset) {
         RotateAnimation ra = new RotateAnimation(0, 180, view.getWidth() / 2, view.getHeight());
-        startRotateAnimation(view, startOffset, ra);
-        // 设置ViewGroup及其子View 不可以点击
-        setViewEnable(view, false);
+        // 开启动画并设置ViewGroup及其子View 不可以点击
+        startRotateAnimation(view, startOffset, ra, false);
     }
 
     /**
@@ -92,9 +91,50 @@ public class Tools {
      */
     private static void showViewByRotateAnimation(ViewGroup view, int startOffset) {
         RotateAnimation ra = new RotateAnimation(180, 360, view.getWidth() / 2, view.getHeight());
-        startRotateAnimation(view, startOffset, ra);
-        // 设置ViewGroup及其子View 可以点击
-        setViewEnable(view, true);
+        // 开启动画并设置ViewGroup及其子View 可以点击
+        startRotateAnimation(view, startOffset, ra, true);
+    }
+
+
+    /**
+     * 开启RotateAnimation动画
+     *
+     * @param view        要显示动画的View
+     * @param startOffset 动画延迟多久开始播放
+     * @param rotateAnimation          RotateAnimation动画
+     * @param enable      是否可以点击，true为可以，false为不可以
+     */
+    private static void startRotateAnimation(ViewGroup view, int startOffset, RotateAnimation rotateAnimation, boolean enable) {
+        startRotateAnimation(view, startOffset, 500, true, rotateAnimation, enable);
+    }
+
+    /**
+     * 开启RotateAnimation动画
+     *
+     * @param view           要显示动画的View
+     * @param startOffset    动画延迟多久开始播放
+     * @param durationMillis 动画播放持续的时间
+     * @param fillAfter      动画停留在播放完成的状态
+     * @param rotateAnimation             RotateAnimation动画
+     * @param enable         是否可以点击，true为可以，false为不可以
+     */
+    private static void startRotateAnimation(ViewGroup view, int startOffset, long durationMillis, boolean fillAfter, RotateAnimation rotateAnimation, boolean enable) {
+        //设置动画播放持续的时间
+        rotateAnimation.setDuration(durationMillis);
+        //动画停留在播放完成的状态
+        rotateAnimation.setFillAfter(fillAfter);
+        //动画延迟多久开始播放
+        rotateAnimation.setStartOffset(startOffset);
+        //开启动画
+        view.startAnimation(rotateAnimation);
+
+        //因为基于View的渐变动画，只是改变了View的绘制效果，实际属性值并未改变。
+        //比如：动画移动了一个按钮的位置，但是按钮的实际位置仍未改变。
+        //所以在动画隐藏之后，需要设置ViewGroup及其子View不可以点击
+        //    在动画显示之后，需要设置ViewGroup及其子View可以点击
+
+        //设置ViewGroup及其子View是否可以点击
+        setViewEnable(view, enable);
     }
 
     /**
@@ -110,34 +150,5 @@ public class Tools {
             View children = viewGroup.getChildAt(i);
             children.setEnabled(enable);
         }
-    }
-
-    /**
-     * 开启RotateAnimation动画
-     *
-     * @param view        要显示动画的View
-     * @param startOffset 动画延迟多久开始播放
-     * @param ra          动画
-     */
-    private static void startRotateAnimation(ViewGroup view, int startOffset, RotateAnimation ra) {
-        startRotateAnimation(view, startOffset, 500, true, ra);
-    }
-
-    /**
-     * 开启RotateAnimation动画
-     *
-     * @param view           要显示动画的View
-     * @param startOffset    动画延迟多久开始播放
-     * @param durationMillis 动画播放持续的时间
-     * @param fillAfter      动画停留在播放完成的状态
-     * @param ra             动画
-     */
-    private static void startRotateAnimation(ViewGroup view, int startOffset, long durationMillis, boolean fillAfter, RotateAnimation ra) {
-        //设置动画播放持续的时间
-        ra.setDuration(durationMillis);
-        //动画停留在播放完成的状态
-        ra.setFillAfter(fillAfter);
-        ra.setStartOffset(startOffset);
-        view.startAnimation(ra);
     }
 }
