@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements BaseHandlerCallBa
     private TextView tv_title;
     private LinearLayout ll_point_group;
 
-    private ArrayList<ImageView> imageViews;
+    private ArrayList<CustomImageView> imageViews;
 
     /**
      * 图片资源ID
@@ -61,18 +61,21 @@ public class MainActivity extends AppCompatActivity implements BaseHandlerCallBa
      */
     private NoLeakHandler mNoLeakHandler;
 
+    private final int SEND_MESSAGE_DELAY_MILLIS = 4000;
+
     /**
      * 处理Handler消息
+     *
      * @param msg Handler消息
      */
     @Override
     public void callBack(Message msg) {
-        Log.d(TAG, "callBack() msg =" + msg);
         int item = viewpager.getCurrentItem() + 1;
+        Log.d(TAG, "callBack() msg =" + msg  + " ,currentItem = " + item);
         viewpager.setCurrentItem(item);
 
         //延迟发消息
-        mNoLeakHandler.sendEmptyMessageDelayed(0, 4000);
+        mNoLeakHandler.sendEmptyMessageDelayed(0, SEND_MESSAGE_DELAY_MILLIS);
     }
 
 
@@ -89,15 +92,15 @@ public class MainActivity extends AppCompatActivity implements BaseHandlerCallBa
         //初始化要展示的数据
         imageViews = new ArrayList<>();
         for (int i = 0; i < imageIds.length; i++) {
-            ImageView imageView = new ImageView(this);
-            imageView.setBackgroundResource(imageIds[i]);
-            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            CustomImageView CustomImageView = new CustomImageView(this);
+            CustomImageView.setBackgroundResource(imageIds[i]);
+            CustomImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
             //添加到集合中
-            imageViews.add(imageView);
+            imageViews.add(CustomImageView);
 
             //添加点
-            ImageView point = new ImageView(this);
+            CustomImageView point = new CustomImageView(this);
             point.setBackgroundResource(R.drawable.point_selector);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(8, 8);
             if (i == 0) {
@@ -117,6 +120,11 @@ public class MainActivity extends AppCompatActivity implements BaseHandlerCallBa
         //默认设置中间位置，这样才能支持左右无限滑动
         //要保证imageViews的整数倍
         int item = Integer.MAX_VALUE / 2 - getRealPosition(Integer.MAX_VALUE / 2);
+
+        // 22:   11 - 11 % 5 = 10       (5的倍数)
+        // 400:  200 - 200 % 5 = 200    (5的倍数)
+        // 803:  401 - 401 % 5 = 400    (5的倍数)
+
         viewpager.setCurrentItem(item);
 
         tv_title.setText(imageDescriptions[prePosition]);
@@ -190,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements BaseHandlerCallBa
                 isDragging = false;
                 Log.i(TAG, "SCROLL_STATE_IDLE------------");
                 mNoLeakHandler.removeCallbacksAndMessages(null);
-                mNoLeakHandler.sendEmptyMessageDelayed(0, 4000);
+                mNoLeakHandler.sendEmptyMessageDelayed(0, SEND_MESSAGE_DELAY_MILLIS);
             }
         }
     }
@@ -222,15 +230,15 @@ public class MainActivity extends AppCompatActivity implements BaseHandlerCallBa
         @Override
         public Object instantiateItem(ViewGroup container, final int position) {
             int realPosition = getRealPosition(position);
-            final ImageView imageView = imageViews.get(realPosition);
-            container.addView(imageView);//添加到ViewPager中
-            Log.d(TAG, "instantiateItem==" + position + ",---imageView==" + imageView);
+            final CustomImageView CustomImageView = imageViews.get(realPosition);
+            container.addView(CustomImageView);//添加到ViewPager中
+            Log.d(TAG, "instantiateItem==" + position + ",---CustomImageView==" + CustomImageView);
 
             //设置图片的触摸事件
-            imageView.setOnTouchListener(new MyImageOnTouchListener());
+            CustomImageView.setOnTouchListener(new MyImageOnTouchListener());
             //保存位置
-            imageView.setTag(position);
-            imageView.setOnClickListener(new View.OnClickListener() {
+            CustomImageView.setTag(position);
+            CustomImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int position = getRealPosition((int) v.getTag());
@@ -240,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements BaseHandlerCallBa
                 }
             });
 
-            return imageView;
+            return CustomImageView;
         }
 
 
@@ -291,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements BaseHandlerCallBa
                 case MotionEvent.ACTION_UP://手指离开
                     Log.d(TAG, "onTouch==手指离开");
                     mNoLeakHandler.removeCallbacksAndMessages(null);
-                    mNoLeakHandler.sendEmptyMessageDelayed(0, 4000);
+                    mNoLeakHandler.sendEmptyMessageDelayed(0, SEND_MESSAGE_DELAY_MILLIS);
                     //如果底下的返回值为true,则需要调用performClick()方法，否则OnClick事件无效
                     //如果底下的返回值为false,则不一定需要调用performClick()方法
                     v.performClick();
