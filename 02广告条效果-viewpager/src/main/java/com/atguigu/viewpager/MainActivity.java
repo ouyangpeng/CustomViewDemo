@@ -275,6 +275,9 @@ public class MainActivity extends AppCompatActivity implements BaseHandlerCallBa
     class MyImageOnTouchListener implements View.OnTouchListener {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
+//          onTouch是优先于onClick的，
+//          并且执行了两次，一次是ACTION_DOWN,一次是ACTION_UP(可能还会有多次ACTION_MOVE)，
+//          因此事件传递的顺序是先经过OnTouch,再传递给onClick
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN://手指按下
                     Log.d(TAG, "onTouch==手指按下");
@@ -291,10 +294,10 @@ public class MainActivity extends AppCompatActivity implements BaseHandlerCallBa
                     mNoLeakHandler.sendEmptyMessageDelayed(0, 4000);
                     //如果底下的返回值为true,则需要调用performClick()方法，否则OnClick事件无效
                     //如果底下的返回值为false,则不一定需要调用performClick()方法
-//                    v.performClick();
+                    v.performClick();
                     break;
             }
-            return false;
+            return true;
         }
     }
 
