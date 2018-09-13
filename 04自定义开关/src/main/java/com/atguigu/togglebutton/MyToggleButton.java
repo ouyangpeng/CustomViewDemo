@@ -1,6 +1,7 @@
 package com.atguigu.togglebutton;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -48,15 +49,22 @@ public class MyToggleButton extends View {
     }
 
     public MyToggleButton(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        initView();
+        this(context, attrs, defStyleAttr, 0);
     }
 
-    private void initView() {
+    public MyToggleButton(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+
+        final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.MyToggleButton, defStyleAttr, 0);
+        int backgroundDrawableResId = a.getResourceId(R.styleable.MyToggleButton_switch_background, R.drawable.switch_background);
+        int slideButtonDrawableResId = a.getResourceId(R.styleable.MyToggleButton_slide_button, R.drawable.slide_button);
+        a.recycle();
+
         paint = new Paint();
         paint.setAntiAlias(true);//设置抗锯齿
-        backgroundBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.switch_background);
-        slidingBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.slide_button);
+
+        backgroundBitmap = BitmapFactory.decodeResource(getResources(), backgroundDrawableResId);
+        slidingBitmap = BitmapFactory.decodeResource(getResources(), slideButtonDrawableResId);
         slidLeftMax = backgroundBitmap.getWidth() - slidingBitmap.getWidth();
     }
 

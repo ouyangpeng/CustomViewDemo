@@ -8,4 +8,12 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+
+    <declare-styleable name="MyToggleButton">
+        <!--背景图片-->
+        <attr name="switch_background" format="reference"/>
+        <!--拖动块图片-->
+        <attr name="slide_button" format="reference"/>
+    </declare-styleable>
+
 </resources>
