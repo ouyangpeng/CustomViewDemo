@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">04自定义开关</string>
+    <string name="opened">打开</string>
+    <string name="closed">关闭</string>
 </resources>
