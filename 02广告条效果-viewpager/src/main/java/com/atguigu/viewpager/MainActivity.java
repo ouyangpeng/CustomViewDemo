@@ -102,12 +102,13 @@ public class MainActivity extends AppCompatActivity implements BaseHandlerCallBa
             //添加点
             CustomImageView point = new CustomImageView(this);
             point.setBackgroundResource(R.drawable.point_selector);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(8, 8);
+            int pxValue = DensityUtil.dip2px(MainActivity.this,8);//dp->px
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(pxValue, pxValue);
             if (i == 0) {
                 point.setEnabled(true); //显示红色
             } else {
                 point.setEnabled(false);//显示灰色
-                params.leftMargin = 8;
+                params.leftMargin = pxValue;
             }
             point.setLayoutParams(params);
             ll_point_group.addView(point);
